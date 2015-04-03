@@ -1,5 +1,5 @@
 name:                edit-distance-vector
-version:             0.1.0.0
+version:             1.0
 synopsis:            Calculate edit distances and edit scripts between vectors.
 description:
   An implementation of the Wagner–Fischer dynamic programming algorithm to
@@ -9,8 +9,10 @@ description:
   with "Data.Vector" but is otherwise agnostic to:
   .
   * The type of values in the vectors;
+  .
   * The type representing edit operations; and
-  * The type representing the operation costs.
+  .
+  * The type representing the cost of operations.
   .
 homepage:            https://github.com/thsutton/edit-distance-vector
 license:             BSD3
@@ -18,9 +20,9 @@ license-file:        LICENSE
 author:              Thomas Sutton
 maintainer:          me@thomas-sutton.id.au
 copyright:           (c) 2015 Thomas Sutton and others.
-category:            Data
+category:            Data, Data Structures, Algorithms
 build-type:          Simple
-extra-source-files:  README.md
+extra-source-files:  README.md, CHANGELOG.md
 cabal-version:       >=1.10
 
 source-repository    HEAD
@@ -34,7 +36,7 @@ library
       Data.Vector.Distance
   build-depends:
       base >=4.7 && <4.8
-    , vector
+    , vector >= 0.8
 
 test-suite             properties
   default-language:    Haskell2010
