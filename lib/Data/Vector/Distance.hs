@@ -161,6 +161,6 @@ strParams = Params{..}
     delete     i c    = ("delete", i, c)
     insert     i c    = ("insert", i, c)
     substitute i c c' = ("replace", i, c')
-    cost _ = 1
+    cost _ = Sum 1
     positionOffset ("delete", _, _) = 0
     positionOffset _ = 1
