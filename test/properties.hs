@@ -13,7 +13,7 @@ import System.Exit
 import Test.QuickCheck
 import Test.QuickCheck.Instances ()
 
-import Data.Vector.Distance hiding (str)
+import Data.Vector.Distance
 
 -- | Changes to a 'String' (or other sequence, really).
 data C a
