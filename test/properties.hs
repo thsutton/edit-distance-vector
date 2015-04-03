@@ -13,7 +13,7 @@ import System.Exit
 import Test.QuickCheck
 import Test.QuickCheck.Instances ()
 
-import Data.Vector.Distance hiding (str)
+import Data.Vector.Distance
 
 -- | Changes to a 'String' (or other sequence, really).
 data C a
@@ -46,10 +46,7 @@ str = Params{..}
     delete = D
     insert = I
     substitute = S
-    cost op = case op of
-        D{} -> 1
-        I{} -> 1
-        S{} -> 1
+    cost op = Sum 1
     positionOffset op = case op of
         D{} -> 0
         _   -> 1
@@ -58,7 +55,7 @@ str = Params{..}
 prop_distance_id :: String -> Bool
 prop_distance_id s =
     let s' = V.fromList s
-    in leastChanges str s' s' == (0, [])
+    in leastChanges str s' s' == (Sum 0, [])
 
 -- | Delete everything!
 prop_distance_delete :: NonEmptyList Char -> Bool
@@ -77,10 +74,10 @@ prop_distance_canned =
         kitten = V.fromList ("kitten" :: String)
         saturday = V.fromList ("Saturday" :: String)
         sunday = V.fromList ("Sunday" :: String)
-    in leastChanges str sitting kitten == (3, [S 0 's' 'k',S 4 'i' 'e',D 6 'g'])
-    && leastChanges str kitten sitting == (3, [S 0 'k' 's',S 4 'e' 'i',I 6 'g'])
-    && leastChanges str saturday sunday == (3, [D 1 'a',D 1 't',S 2 'r' 'n'])
-    && leastChanges str sunday saturday == (3, [I 1 'a',I 2 't',S 4 'n' 'r'])
+    in leastChanges str sitting kitten == (Sum 3, [S 0 's' 'k',S 4 'i' 'e',D 6 'g'])
+    && leastChanges str kitten sitting == (Sum 3, [S 0 'k' 's',S 4 'e' 'i',I 6 'g'])
+    && leastChanges str saturday sunday == (Sum 3, [D 1 'a',D 1 't',S 2 'r' 'n'])
+    && leastChanges str sunday saturday == (Sum 3, [I 1 'a',I 2 't',S 4 'n' 'r'])
 
 -- | Apply the found changes works.
 --
