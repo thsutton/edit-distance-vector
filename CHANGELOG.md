@@ -1,3 +1,7 @@
+edit-distance-vector 1.0.0.1
+
+    * Relax version bounds to support GHC 7.10.1.
+
 edit-distance-vector 1.0
 
     * Initial release extracted from aeson-diff package and rewritten to use
