@@ -15,7 +15,7 @@ Installing
 The `edit-distance-vector` package is a normal Haskell library and can be
 installed using the Cabal package management tool.
 
-````{shell}
+````{bash}
 cabal update
 cabal install edit-distance-vector
 ````
@@ -29,12 +29,11 @@ deal with your types, and pass this to `leastChanges` along with your
 `Vector`s.
 
 ````{haskell}
-
 import qualified Data.Vector as V
 import           Data.Vector.Distance
 
--- | Editing vectors of 'Char', with (command, position, new-char) describing
---   changes and the additive monoid of 'Int' describing costs.
+-- | Editing vectors of 'Char' values, with '(String, Int, Char)' describing
+--   changes, and the additive monoid of 'Int' describing costs.
 str :: Params Char (String, Int, Char) (Sum Int)
 str = Params
     { equivalent = (==)
@@ -48,7 +47,8 @@ str = Params
 
 main :: IO ()
 main = do
-    print $ leastChanges str (V.fromList "I am thomas") (V.fromList "My name is Thomas")
+    print $ leastChanges str (V.fromList "I am thomas")
+                             (V.fromList "My name is Thomas")
 ````
 
 [badge]: https://travis-ci.org/thsutton/edit-distance-vector.svg?branch=master
