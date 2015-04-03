@@ -10,7 +10,7 @@ maintainer:          me@thomas-sutton.id.au
 copyright:           (c) 2015 Thomas Sutton and others.
 category:            Data
 build-type:          Simple
--- extra-source-files:  
+extra-source-files:  README.md
 cabal-version:       >=1.10
 
 source-repository    HEAD

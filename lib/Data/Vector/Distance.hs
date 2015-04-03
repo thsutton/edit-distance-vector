@@ -7,7 +7,18 @@
 -- This module implements a variation on the Wagner-Fischer algorithm to find
 -- the shortest sequences of operations which transformers one vector of values
 -- into another.
-module Data.Vector.Distance where
+module Data.Vector.Distance (
+  -- * Types
+  Params(..),
+  ChangeMatrix(..),
+
+  -- * Operations
+  leastChanges,
+  allChanges,
+
+  -- * Example
+  strParams,
+  ) where
 
 import           Control.Applicative
 import           Control.Arrow       ((***))
@@ -19,6 +30,16 @@ import           Data.Vector         (Vector)
 import qualified Data.Vector         as V
 
 -- | Operations invoked by the Wagner-Fischer algorithm.
+--
+--   The parameters to this type are as follows:
+--
+--   * 'v' is the type of values being compared,
+--   * 'o' is the type representing operations,
+--   * 'c' is the type representing costs.
+--
+--   The chief restrictions on these type parameters is that the cost type 'c' 
+--   must have instances of 'Monoid' and 'Ord'. A good default choice might be
+--   the type @('Sum' 'Int')@.
 data Params v o c = Params
     { equivalent     :: v -> v -> Bool
     -- ^ Are two values equivalent?
@@ -34,44 +55,58 @@ data Params v o c = Params
     -- ^ Positions to advance after a change. E.g. @0@ for a deletion.
     }
 
-str :: Params Char (String, Int, Char) (Sum Int)
-str = Params{..}
-  where
-    equivalent = (==)
-    delete i c = ("delete", i, c)
-    insert i c = ("insert", i, c)
-    substitute i a a' = ("replace", i, a')
-    cost _ = 1
-    positionOffset ("delete", _, _) = 0
-    positionOffset _ = 1
 
--- | Find the least-cost sequence of changes to transform one vector into
--- another.
-leastChanges :: (Monoid c, Ord c) => Params v o c -> Vector v -> Vector v -> (c, [o])
-leastChanges p ss tt = fmap (catMaybes . reverse) . V.last $ changes p ss tt
-
--- | Matrix used to find least cost sequence of changes.
-type ChangeMatrix o c = Vector (c, [Maybe o])
-
--- | Calculate the complete matrix of edit scripts and costs between two
--- vectors.
+-- | Matrix of optimal edit scripts and costs for all prefixes of two vectors.
 --
--- This is a fairly direct implementation of Wagner-Fischer algorithm cast in
--- terms of 'Vector'.
-changes
+--   This is a representation of the @n * m@ dynamic programming matrix
+--   constructed by the algorithm.  The matrix is stored in a 'Vector' in
+--   row-major format with an additional row and column corresponding to the
+--   empty prefix of the source and destination 'Vectors'.
+type ChangeMatrix o c = Vector (c, [o])
+
+-- | /O(nm)./ Find the cost and optimal edit script to transform one 'Vector'
+--   into another.
+leastChanges
+    :: (Monoid c, Ord c)
+    => Params v o c
+    -> Vector v -- ^ \"Source\" vector.
+    -> Vector v -- ^ \"Destination" vector.
+    -> (c, [o])
+leastChanges p ss tt = fmap (catMaybes . reverse) . V.last $ rawChanges p ss tt
+
+-- | /O(nm)./ Calculate the complete matrix of edit scripts and costs between
+--   two vectors.
+allChanges
     :: (Monoid c, Ord c)
     => Params v o c
     -> Vector v -- ^ \"Source\" vector.
     -> Vector v -- ^ \"Destination" vector.
     -> ChangeMatrix o c
-changes p@Params{..} src dst =
+allChanges p src dst = V.map (fmap (catMaybes . reverse)) $ rawChanges p src dst
+
+-- | /O(nm)./ Calculate the complete matrix of edit scripts and costs between
+--   two vectors.
+--
+--   This is a fairly direct implementation of Wagner-Fischer algorithm using
+--   the 'Vector' data-type. The 'ChangeMatrix' is constructed in a single-pass.
+--
+--   Note: The change matrix is \"raw\" in that the edit script in each cell is
+--   in reverse order and uses 'Maybe' to allow for steps at which no change is
+--   necessary.
+rawChanges
+    :: (Monoid c, Ord c)
+    => Params v o c
+    -> Vector v -- ^ \"Source\" vector.
+    -> Vector v -- ^ \"Destination" vector.
+    -> Vector (c, [Maybe o])
+rawChanges p@Params{..} src dst =
     let len_x = 1 + V.length dst
         len_y = 1 + V.length src
         len_n = len_x * len_y
         ix x y = (x * len_y) + y
         -- Get a cell from the 'ChangeMatrix'. It is an error to get a cell
         -- which hasn't been calculated yet!
-        get :: ChangeMatrix o c -> Int -> Int -> (c, [Maybe o])
+        get :: Vector (c, [Maybe o]) -> Int -> Int -> (c, [Maybe o])
         get m x y = fromMaybe (error $ "Unable to get " <> show (x,y) <> " from change matrix") (m V.!? (ix x y))
         -- Calculate the position to be updated by the next edit in a script.
         position = sum . fmap (maybe 1 positionOffset)
@@ -110,3 +145,21 @@ changes p@Params{..} src dst =
                           in (cost c <>) *** (Just c :) $ tl
                         ]
     in V.constructN len_n ctr
+
+-- | Example 'Params' to compare @('Vector' 'Char')@ values.
+--
+--   The algorithm will produce edit distances in terms of @('Sum' 'Int')@ and
+--   edit scripts containing @(String, Int, Char)@ values.
+--   
+--   The first component of each operation is either @"delete"@, @"insert"@, or
+--   @"replace"@.
+strParams :: Params Char (String, Int, Char) (Sum Int)
+strParams = Params{..}
+  where
+    equivalent = (==)
+    delete     i c    = ("delete", i, c)
+    insert     i c    = ("insert", i, c)
+    substitute i c c' = ("replace", i, c')
+    cost _ = 1
+    positionOffset ("delete", _, _) = 0
+    positionOffset _ = 1
