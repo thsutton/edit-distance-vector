@@ -1,7 +1,17 @@
 name:                edit-distance-vector
 version:             0.1.0.0
 synopsis:            Calculate edit distances and edit scripts between vectors.
-description:         Calculate edit distances and edit scripts between vectors.
+description:
+  An implementation of the Wagner–Fischer dynamic programming algorithm to
+  find the optimal edit script and cost between two sequences.
+  .
+  The implementation in this package is specialised to sequences represented
+  with "Data.Vector" but is otherwise agnostic to:
+  .
+  * The type of values in the vectors;
+  * The type representing edit operations; and
+  * The type representing the operation costs.
+  .
 homepage:            https://github.com/thsutton/edit-distance-vector
 license:             BSD3
 license-file:        LICENSE
