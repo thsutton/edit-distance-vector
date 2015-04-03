@@ -13,7 +13,7 @@ import System.Exit
 import Test.QuickCheck
 import Test.QuickCheck.Instances ()
 
-import Data.Vector.Distance
+import Data.Vector.Distance hiding (str)
 
 -- | Changes to a 'String' (or other sequence, really).
 data C a
@@ -39,7 +39,7 @@ runC (S i a a' : r) l =
     in runC r l'
 
 -- | Edit parameters for 'String'.
-str :: Params Char (C Char)
+str :: Params Char (C Char) (Sum Int)
 str = Params{..}
   where
     equivalent = (==)
@@ -57,25 +57,26 @@ str = Params{..}
 -- | Patch extracted from identical documents should be mempty.
 prop_distance_id :: String -> Bool
 prop_distance_id s =
-    leastChanges str s s == (0, [])
+    let s' = V.fromList s
+    in leastChanges str s' s' == (0, [])
 
 -- | Delete everything!
 prop_distance_delete :: NonEmptyList Char -> Bool
 prop_distance_delete (NonEmpty s) =
-    leastChanges str s "" == (length s, [ D 0 c | c <- s ])
+    leastChanges str (V.fromList s) V.empty == (Sum $ length s, [ D 0 c | c <- s ])
 
 -- | Insert everything!
 prop_distance_insert :: NonEmptyList Char -> Bool
 prop_distance_insert (NonEmpty s) =
-    leastChanges str "" s == (length s, [ I i c | (i,c) <- zip [0..] s ])
+    leastChanges str V.empty (V.fromList s) == (Sum $ length s, [ I i c | (i,c) <- zip [0..] s ])
 
 -- | The examples from wikipedia.
 prop_distance_canned :: Bool
 prop_distance_canned =
-    let sitting = "sitting" :: String
-        kitten = "kitten" :: String
-        saturday = "Saturday" :: String
-        sunday = "Sunday" :: String
+    let sitting = V.fromList ("sitting" :: String)
+        kitten = V.fromList ("kitten" :: String)
+        saturday = V.fromList ("Saturday" :: String)
+        sunday = V.fromList ("Sunday" :: String)
     in leastChanges str sitting kitten == (3, [S 0 's' 'k',S 4 'i' 'e',D 6 'g'])
     && leastChanges str kitten sitting == (3, [S 0 'k' 's',S 4 'e' 'i',I 6 'g'])
     && leastChanges str saturday sunday == (3, [D 1 'a',D 1 't',S 2 'r' 'n'])
@@ -86,7 +87,7 @@ prop_distance_canned =
 -- @apply . leastChanges === id@
 prop_distance_apply :: String -> String -> Bool
 prop_distance_apply ss tt =
-    tt == runC (snd $ leastChanges str ss tt) ss
+    tt == runC (snd $ leastChanges str (V.fromList ss) (V.fromList tt)) ss
 
 --
 -- Use Template Haskell to automatically run all of the properties above.
