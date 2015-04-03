@@ -4,9 +4,10 @@
 
 -- | Description: Calculate differences between vectors.
 --
--- This module implements a variation on the Wagner-Fischer algorithm to find
--- the shortest sequences of operations which transformers one vector of values
--- into another.
+-- This module implements a variation on the
+-- <http://en.wikipedia.org/wiki/Wagner–Fischer_algorithm Wagner-Fischer>
+-- algorithm to find the shortest sequences of operations which transforms
+-- one vector of values into another.
 module Data.Vector.Distance (
   -- * Types
   Params(..),
@@ -18,7 +19,7 @@ module Data.Vector.Distance (
 
   -- * Example
   strParams,
-  ) where
+) where
 
 import           Control.Applicative
 import           Control.Arrow       ((***))
