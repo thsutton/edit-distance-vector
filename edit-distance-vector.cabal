@@ -15,6 +15,7 @@ description:
   * The type representing the cost of operations.
   .
 homepage:            https://github.com/thsutton/edit-distance-vector
+bug-reports:         https://github.com/thsutton/edit-distance-vector/issues
 license:             BSD3
 license-file:        LICENSE
 author:              Thomas Sutton
