@@ -1,3 +1,7 @@
+edit-distance-vector 1.0.0.2
+
+    * Relax version bounds to support GHC 7.6.3 and 7.4.2
+
 edit-distance-vector 1.0.0.1
 
     * Relax version bounds to support GHC 7.10.1.
