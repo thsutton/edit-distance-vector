@@ -45,7 +45,7 @@ str = Params
     , delete     = \i c    -> ("delete", i, c)
     , insert     = \i c    -> ("insert", i, c)
     , substitute = \i c c' -> ("replace", i, c')
-    , cost = const (Sum 1)
+    , cost = const 1
     , positionOffset = \ (op, _, _) -> if op == "delete" then 0 else 1
     }
 
