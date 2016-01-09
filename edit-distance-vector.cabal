@@ -1,5 +1,5 @@
 name:                edit-distance-vector
-version:             1.0.0.2
+version:             1.0.0.3
 synopsis:            Calculate edit distances and edit scripts between vectors.
 description:
   An implementation of the Wagner–Fischer dynamic programming algorithm to
