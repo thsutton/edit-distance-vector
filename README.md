@@ -21,7 +21,7 @@ cabal install edit-distance-vector
 ````
 
 `edit-distance-vector` is [automatically tested][status] on GHC versions 7.4.2,
-7.6.3, 7.8.3, and 7.10.1 using the Travis CI service.
+7.6.3, 7.8.3, 7.10.1, 8.0.2 using the Travis CI service.
 
 Usage
 -----
