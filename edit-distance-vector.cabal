@@ -1,5 +1,5 @@
 name:                edit-distance-vector
-version:             1.0.0.3
+version:             1.0.0.4
 synopsis:            Calculate edit distances and edit scripts between vectors.
 description:
   An implementation of the Wagner–Fischer dynamic programming algorithm to
@@ -36,7 +36,7 @@ library
   exposed-modules:
       Data.Vector.Distance
   build-depends:
-      base >=4.5 && <4.9
+      base >=4.5 && <5.0
     , vector >= 0.8
 
 test-suite             properties
